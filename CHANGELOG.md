@@ -5,6 +5,40 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2026-10-16
+
+Layout correctness for sections that cannot fit on one row, and for content that is wider than the
+box it sits in. Both were reproduced by compiling a dense product page and measuring it at
+1440/768/375 px.
+
+### Fixed
+
+- **A `nav` never degrades to a full-width vertical stack any more.** The nav grammar only produces
+  side-by-side children, so a nav whose logo, links and action need more than twelve columns had *no*
+  feasible candidate and silently fell back to a stack — a tall list of links where a nav should be.
+  The layout search now tries order-preserving wraps (row 1 = blocks `0..k`, row 2 = the rest) before
+  falling back, so reading order, visual order and keyboard focus order stay identical.
+- **Link cells are as wide as their label.** Every link used to reserve a two-column minimum
+  regardless of its text, which burned a column per short item and is what made a five-link nav with
+  a logo and an action unrealizable. This alone restores a single-row nav for the shipped examples.
+- **Long unbreakable tokens are no longer clipped.** Sections are `overflow: hidden`, so a long
+  identifier, absolute path or query string ran past its box and was cut off at the card edge —
+  without ever showing up as page overflow. The document now carries
+  `overflow-wrap: break-word; overflow-wrap: anywhere`, inherited by every text node.
+- **The browser gate now fails on clipped content.** `verify/run.sh` and
+  `tests/browser.rs` assert `overflowing_elements == []` in addition to page overflow and section
+  containment, so an element that outgrows its own box is caught in CI instead of shipping. A
+  one-pixel stub — the canonical visually-hidden `sr-only` accessibility helper — is excluded,
+  because clipping is the whole point of that pattern.
+
+### Added
+
+- **Mobile-first contract in the skills.** `illustrateris-design-webgpu` now states the rules that
+  hand-written layouts keep violating — no desktop grid without a mobile fallback, breakable long
+  tokens, navs wrap instead of scrolling sideways, and `overflow: hidden` means clipped — and
+  requires measuring at 1440/768/375 before a page is called done. `illustrateris-ple-engine`'s
+  verification step checks `overflowing_elements` as well.
+
 ## [0.4.0] - 2026-10-16
 
 First release published from the `sysv86/Illustrateris` repository.
@@ -57,6 +91,7 @@ Initial release. Zero runtime dependencies; Rust 2021, built and tested with rus
 - **Two styling backends.** `--backend tailwind` and `--backend css`.
 - **Browser verification.** `verify/browser_verify.py` / `verify/run.sh`.
 
+[0.4.1]: https://github.com/sysv86/Illustrateris/releases/tag/v0.4.1
 [0.4.0]: https://github.com/sysv86/Illustrateris/releases/tag/v0.4.0
 [0.2.0]: https://github.com/sysv86/Illustrateris/releases/tag/v0.2.0
 [0.1.0]: https://github.com/sysv86/Illustrateris/releases/tag/v0.1.0

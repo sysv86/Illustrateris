@@ -1,6 +1,6 @@
 [package]
 name = "ple-engine"
-version = "0.4.0"
+version = "0.4.1"
 edition = "2021"
 rust-version = "1.70"
 description = "Procedural Layout Engine: context JSON -> contrast-verified, constraint-solved HTML + Tailwind/CSS"
