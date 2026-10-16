@@ -10,6 +10,10 @@ updates:
     labels:
       - dependencies
       - github-actions
+    ignore:
+      # The MSRV job pins this ref on purpose (it selects the 1.70.0 toolchain).
+      # Dependabot reads it as a version and would break the MSRV check.
+      - dependency-name: "dtolnay/rust-toolchain"
 
   # The crate has no runtime dependencies by design; this only keeps the
   # generated lockfile honest if one is ever added.
