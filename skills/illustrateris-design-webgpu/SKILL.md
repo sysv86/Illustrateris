@@ -1,6 +1,6 @@
 ---
 name: illustrateris-design-webgpu
-description: Core frontend design engineering foundations for Illustrateris. Explains why to use WebGPU instead of WebGL, when WebGPU belongs in a frontend or landing page (and when it does not), when and how to use Three.js (three/webgpu + TSL) with KTX2/Meshopt assets for heavy 3D landing pages, how to research contemporary design from first principles without copying templates, how to engineer frame-rate-independent animations and scroll choreography, and how to eliminate all three waves of AI slop.
+description: Core frontend design engineering foundations for Illustrateris. Explains why to use WebGPU instead of WebGL, when WebGPU belongs in a frontend or landing page (and when it does not), when and how to use Three.js (three/webgpu + TSL) with KTX2/Meshopt assets for heavy 3D landing pages, how to research contemporary design from first principles without copying templates, how to engineer frame-rate-independent animations and scroll choreography, how to make hand-written layouts survive mobile (mobile-first grid contract, breaking long tokens, wrapping navs, measuring at 375/768/1440 for clipped content), and how to eliminate all three waves of AI slop.
 ---
 
 # Illustrateris Design Foundations: WebGPU, Three.js TSL, Choreography & Anti-Slop
@@ -16,6 +16,8 @@ This skill defines the engineering and aesthetic laws for building modern fronte
 - Researching visual direction and spatial composition for a new brand or product without falling back on stock SaaS templates.
 - Implementing scroll choreography, spring physics, or micro-interactions.
 - Auditing a frontend to eliminate Wave 1, Wave 2, and Wave 3 ("editorial template") AI slop.
+- Repairing or reviewing a hand-written landing page that breaks on a phone: overlapping metric
+  rows, a nav that does not wrap, chips or code identifiers clipped at the card edge.
 
 ## Steps
 
@@ -57,7 +59,44 @@ Choose the exact rendering tier based on scene complexity:
 
 Read `references/threejs-webgpu-heavy-landings.md` for the complete production Three.js `WebGPURenderer` + TSL + KTX2 + Spline Camera Scroll Rig tutorial.
 
-### 3. How to Research Contemporary Design (Without Template Cloning)
+### 3. The Mobile-First Contract (Non-Negotiable)
+
+`ple-engine` output is mobile-first: every grid child is `col-span-12` and the solved placement
+only applies from `@media (min-width: 1024px)` / `lg:`. Hand-written HTML and CSS written around —
+or instead of — the engine must obey the same contract. A landing page is not finished until it has
+been measured.
+
+1. **No desktop grid without a mobile fallback.** Never leave a bare `grid-cols-3` / `grid-cols-4`
+   (or `grid-template-columns: repeat(4, minmax(0, 1fr))`) in place. Below 1024px every direct child
+   of a section grid must span the full row (`col-span-12`, `grid-column: 1 / -1`). A four-up metric
+   row that stays four-up at 375px gives each cell ~80px, and the values then overlap each other.
+2. **Let long tokens break.** A long identifier, a dotted package or module path, an absolute file
+   path, a 40-character URL or a deep build-tool path must wrap, not spill. Put
+   `overflow-wrap: break-word; overflow-wrap: anywhere;` on the text container. Never put
+   `white-space: nowrap` on anything whose content is not a short fixed label (buttons may keep it;
+   body copy, chips, table cells and code may not).
+3. **Navs wrap, they do not scroll sideways.** A nav that needs a second row gets a second row, in
+   reading order. `overflow-x: auto` on a nav hides the symptom, breaks tab order and looks broken on
+   a phone.
+4. **Remember what `overflow: hidden` means.** Sections clip; they never scroll. Anything wider than
+   its own box is *cut off* — the last characters simply disappear at the card edge. Clipping does
+   **not** appear as page-level horizontal overflow, so a `scrollWidth == clientWidth` check on the
+   document will report the page as clean while the card is visibly broken.
+5. **Measure before you claim done.** Render the page and run the harness:
+
+   ```bash
+   ple compile context.json --backend css --clean --no-cdn -o page.html
+   sh verify/run.sh page.html            # exits non-zero on a dirty page
+   # raw numbers, any viewport set:
+   python3 verify/browser_verify.py --html page.html --viewport 1440,768,375 --json geometry.json
+   ```
+
+   Done means, at **1440, 768 and 375** (add 320 when the design is dense):
+   `horizontal_overflow == false`, every `<section>` has `contained == true`, and
+   `overflowing_elements == []`. A page that looks fine at desktop and was never measured at 375px
+   is not finished — that is exactly where the overlapping metric rows and clipped chips come from.
+
+### 4. How to Research Contemporary Design (Without Template Cloning)
 
 Never pick a design from a pre-made JSON deck. Before writing code, execute this 3-step structural research workflow:
 
@@ -73,7 +112,7 @@ Never pick a design from a pre-made JSON deck. Before writing code, execute this
 3. **Pass the Competitor Swap Test**:
    - Mentally swap the client's name and headline with a random competitor in another industry. If the layout and interactive canvas still fit, your design is generic.
 
-### 4. How to Engineer Animations Properly
+### 5. How to Engineer Animations Properly
 
 1. **The Compositor-Only Law**:
    - In CSS and Web Animations API, animate **only** `transform` (`translate3d`, `scale`, `rotate`), `opacity`, `filter`, and `clip-path`.
@@ -92,7 +131,7 @@ Never pick a design from a pre-made JSON deck. Before writing code, execute this
 4. **Progressive Resilience**:
    - Gate initial hidden states behind `html.js-ready` and always honor `@media (prefers-reduced-motion: reduce)`.
 
-### 5. How Not to Fall into AI Slop (All 3 Waves)
+### 6. How Not to Fall into AI Slop (All 3 Waves)
 
 - **Wave 1 Slop (2023-2024 SaaS Cliché)**: Purple/indigo/violet neon gradients (`#6366f1` -> `#a855f7`), glowing blobs, heavy `backdrop-blur` glass cards, pill badge (`"✨ Introducing"`), 3 identical icon-in-box cards, and buzzwords (`"Unleash"`, `"Elevate"`, `"Seamless"`, `"Next-Gen"`).
 - **Wave 2 Slop (2025 Bento & Eyebrow Spam)**: Uniform rounded Bento grids with fake grey-bar dashboards, tiny tracked uppercase eyebrows above every `<h2>`, one random italic/colored word in every H1, and uniform `fade-up` on every DOM node.

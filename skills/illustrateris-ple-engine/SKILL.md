@@ -110,9 +110,11 @@ After ejecting or removing `ple-engine`, verify that no horizontal overflow, box
 
 ```bash
 python3 verify/browser_verify.py --html index.clean.html --viewport 1440,768,375
+# or gate on it directly (exits non-zero on a dirty page):
+sh verify/run.sh index.clean.html
 ```
 
-Confirm in the JSON output that `horizontal_overflow_px == 0` at all three viewports and all `<section>` descendants remain contained within their parent bounds.
+Confirm in the JSON output that `horizontal_overflow_px == 0` at all three viewports, that all `<section>` descendants remain contained within their parent bounds, and that `overflowing_elements` is empty. The last one matters because sections are `overflow: hidden`: content wider than its own box (a long unbreakable identifier or path, a chip with a 40-character package id) is **clipped** rather than reported as page overflow, so the page can pass the first two checks while the card is visibly cut off.
 
 ## Gotchas
 
