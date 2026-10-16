@@ -1,0 +1,7 @@
+/target
+Cargo.lock.bak
+__pycache__/
+*.pyc
+.DS_Store
+# Internal design notes, intentionally not published.
+/CONCEPT.MD

@@ -1,0 +1,112 @@
+name: Bug report
+description: Report incorrect, non-deterministic or unsafe behaviour in ple-engine, the CLI, the skills or the verification harness.
+title: "bug: "
+labels: ["bug", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. `ple-engine` output is meant to be a pure function of
+        `(context JSON, seed, config)`, so anything that is not reproducible is worth reporting
+        explicitly — please include the exact command, the seed and the context JSON.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: The observed behaviour, and why it is wrong.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the project is affected?
+      multiple: true
+      options:
+        - Pipeline / profiler / palette (OKLCH + APCA)
+        - Layout / BSP / Cassowary solver
+        - Codegen (HTML, Tailwind, plain CSS, eject/clean)
+        - CLI (`ple`)
+        - Library API / C ABI / wasm
+        - Text metrics / font tables
+        - Verification harness (`verify/`)
+        - Agent Skills (`skills/`)
+        - CI / packaging
+        - Documentation
+    validations:
+      required: true
+
+  - type: dropdown
+    id: command
+    attributes:
+      label: Entry point
+      options:
+        - ple compile
+        - ple eject (--clean)
+        - ple palette
+        - cargo test
+        - verify/run.sh or browser_verify.py
+        - library (rlib) / C ABI / wasm
+        - not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Include the exact command line. Attach or paste the context JSON (redact anything private).
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Actual output, error or report
+      description: Paste the message, or the `--report` JSON. Do not retype it from memory.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: determinism
+    attributes:
+      label: Determinism check
+      description: |
+        If the output is not reproducible, paste the two commands and the diff
+        (for example the failing assertion from a repeat run, or the mismatch between
+        the engine estimate and the browser measurement).
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: ple version
+      description: Output of `ple version` (or the git commit if built from source).
+      placeholder: "ple 0.4.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, architecture, `rustc -V`; for the harness, the Python and Chromium versions.
+      render: text
+      placeholder: |
+        OS: Ubuntu 24.04 (x86_64)
+        rustc: 1.99.1
+        python3: 3.14 (playwright 1.x)
+    validations:
+      required: true

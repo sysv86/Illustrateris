@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PLE harness negative fixture</title>
+<style>
+  body { margin:0; font-family: Arial, Helvetica, sans-serif; }
+  section { padding:24px; }
+  #wide { background:#ffeeee; }
+  #wide h1 { font-size:28px; margin:0 0 12px; }
+  /* fixed 2200px child: escapes the document box at every viewport */
+  #wide .too-wide { width:2200px; height:80px; background:#ff9999; color:#330000; font-size:20px; }
+  #escape { position:relative; max-width:600px; background:#eeeeff; }
+  #escape h1 { font-size:28px; margin:0; }
+  /* absolutely positioned child: lands outside its own section box */
+  #escape .bleed { position:absolute; left:calc(100% + 60px); top:0; width:200px; height:40px; background:#9999ff; }
+</style>
+</head>
+<body>
+  <section id="wide">
+    <h1>Wide child forces document overflow</h1>
+    <div class="too-wide">2200px fixed width</div>
+  </section>
+  <section id="escape">
+    <h1>Absolutely positioned child escapes its section</h1>
+    <div class="bleed">bleed</div>
+  </section>
+</body>
+</html>

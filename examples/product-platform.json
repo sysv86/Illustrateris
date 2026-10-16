@@ -1,0 +1,113 @@
+{
+  "intent": {
+    "domain": "developer_platform",
+    "tone": "confident_product",
+    "density": 0.62,
+    "asymmetry": 0.55,
+    "chromatic_energy": 0.42
+  },
+  "content_tree": [
+    {
+      "role": "nav",
+      "primary_claim": "Northwind",
+      "items": [
+        { "title": "Product", "href": "#product" },
+        { "title": "Pricing", "href": "#pricing" },
+        { "title": "Docs", "href": "/docs" },
+        { "title": "Changelog", "href": "https://example.com/changelog" }
+      ],
+      "action_type": "secondary_link",
+      "action_label": "Start free",
+      "action_href": "#signup"
+    },
+    {
+      "role": "hero",
+      "primary_claim": "Ship data pipelines without the pager",
+      "supporting_text": "Northwind turns declarative job graphs into hardened, observable infrastructure that heals itself before anyone is woken up.",
+      "action_type": "transactional_input",
+      "action_label": "Create account",
+      "action_placeholder": "Work email",
+      "visual_anchor": "monumental_metric"
+    },
+    {
+      "role": "proof_matrix",
+      "items": [
+        { "metric": "3.4B", "label": "Jobs run monthly" },
+        { "metric": "42s", "label": "Median recovery" },
+        { "metric": "99.99%", "label": "Schedule fidelity" },
+        { "metric": "120k", "label": "Pipelines managed" }
+      ]
+    },
+    {
+      "role": "feature_list",
+      "primary_claim": "Everything that used to be glue code",
+      "items": [
+        { "title": "Declarative graphs", "body": "Describe dependencies once; Northwind derives retries, backfills and back-pressure from the same source of truth." },
+        { "title": "Built-in lineage", "body": "Every run records the inputs it read and the outputs it wrote, so impact analysis is a query instead of an archaeology project." },
+        { "title": "Self-healing retries", "body": "Transient failures are isolated and retried with exponential backoff while the rest of the graph keeps making progress." }
+      ]
+    },
+    {
+      "role": "narrative",
+      "primary_claim": "From cron to confidence",
+      "supporting_text": "Teams migrate to Northwind in an afternoon and rarely look back. The platform keeps your existing orchestration, then adds the guarantees it never had."
+    },
+    {
+      "role": "testimonial",
+      "primary_claim": "Trusted by teams who cannot go down",
+      "items": [
+        {
+          "body": "We deleted four thousand lines of retry glue on day one, and the on-call rotation got quieter the same week.",
+          "title": "Dana Whitfield",
+          "label": "Staff Engineer, Meridian"
+        },
+        {
+          "body": "Lineage used to be a wiki page nobody trusted. Now it is generated from real runs and it is the first thing auditors ask for.",
+          "title": "Priya Raman",
+          "label": "Head of Data, Corvus Health"
+        }
+      ]
+    },
+    {
+      "role": "pricing",
+      "primary_claim": "Pricing that scales with your graph",
+      "items": [
+        { "title": "Starter", "metric": "$0", "label": "forever", "body": "Three pipelines, community support, shared runners." },
+        { "title": "Team", "metric": "$49", "label": "per seat / month", "body": "Unlimited pipelines, alerting, one-day support response." },
+        { "title": "Enterprise", "metric": "Custom", "label": "annual", "body": "SSO, private runners, audit exports and a named engineer." }
+      ],
+      "action_type": "secondary_link",
+      "action_label": "Compare all plans",
+      "action_href": "#compare"
+    },
+    {
+      "role": "faq",
+      "primary_claim": "Questions we hear most",
+      "items": [
+        { "title": "Do I have to rewrite my pipelines?", "body": "No. Northwind reads your existing definitions and layers scheduling, retries and lineage on top." },
+        { "title": "Where do my runs execute?", "body": "On our managed runners by default, or in your own VPC with the enterprise plan." },
+        { "title": "How is lineage stored?", "body": "As an append-only event log scoped to your workspace, exportable at any time." },
+        { "title": "What happens when a run fails?", "body": "The failure is quarantined, retried with backoff, and the surrounding graph continues unless you opt into a hard dependency." }
+      ]
+    },
+    {
+      "role": "cta",
+      "primary_claim": "Start with one pipeline",
+      "supporting_text": "Bring a single job graph to Northwind and see the difference before you migrate anything else.",
+      "action_type": "primary_button",
+      "action_label": "Get started free",
+      "action_href": "#signup"
+    },
+    {
+      "role": "footer",
+      "primary_claim": "Northwind",
+      "supporting_text": "© 2026 Northwind Labs. Built for teams who would rather not be paged.",
+      "items": [
+        { "title": "Status", "href": "https://example.com/status" },
+        { "title": "Security", "href": "/security" },
+        { "title": "Privacy", "href": "/privacy" },
+        { "title": "Terms", "href": "/terms" }
+      ]
+    }
+  ]
+}

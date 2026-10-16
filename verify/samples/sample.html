@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PLE harness sample</title>
+<style>
+  :root { --ink:#12151c; --muted:#59617a; --line:#dde3ee; --accent:#2b5cff; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; padding:0; }
+  body {
+    background:#ffffff;
+    color:var(--ink);
+    font-family: Inter, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  section { padding: clamp(20px, 5vw, 72px) clamp(16px, 4vw, 64px); }
+  h1, h2, h3, p, dl, dt, dd { margin:0; }
+
+  /* 12-column grid, responsive gutters, no track can force overflow */
+  .grid {
+    display:grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: clamp(8px, 1.5vw, 24px);
+    align-items:start;
+  }
+  .grid > * { min-width:0; overflow-wrap:break-word; }
+
+  #hero { background:#ffffff; }
+  #hero h1 {
+    grid-column: 1 / 9;
+    font-size: clamp(2rem, 6vw, 4.5rem);   /* 32px .. 72px, clamped by viewport */
+    line-height:1.08;
+    letter-spacing:-0.02em;
+  }
+  #hero .lede {
+    grid-column: 1 / 7;
+    font-size: clamp(1rem, 1.6vw, 1.375rem);
+    line-height:1.5;
+    color:var(--muted);
+  }
+  #hero .stats {
+    grid-column: 9 / 13;
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:12px;
+  }
+  #hero .stat { border:1px solid var(--line); border-radius:10px; padding:12px; }
+  #hero .stat dt { font-size:0.8125rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
+  #hero .stat dd { font-size:1.5rem; font-weight:700; }
+
+  #features { background:#f4f6fb; }
+  #features h2 { grid-column:1/13; font-size:clamp(1.5rem, 3vw, 2.25rem); line-height:1.2; }
+  #features .card {
+    grid-column: span 4;
+    background:#ffffff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:20px;
+  }
+  #features .card h3 { font-size:clamp(1.125rem, 1.6vw, 1.375rem); line-height:1.3; margin-bottom:8px; }
+  #features .card p { font-size:1rem; line-height:1.55; color:var(--muted); }
+
+  #cta { background:#12151c; color:#ffffff; }
+  #cta .inner {
+    grid-column:1/13;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  #cta h2 { font-size:clamp(1.5rem, 3.2vw, 2.5rem); line-height:1.15; }
+  #cta .btn {
+    background:var(--accent);
+    color:#ffffff;
+    border:0;
+    border-radius:999px;
+    padding:14px 24px;
+    font-size:1rem;
+    font-weight:600;
+  }
+
+  @media (max-width: 640px) {
+    #hero h1, #hero .lede, #hero .stats,
+    #features h2, #features .card,
+    #cta .inner { grid-column: 1 / -1; }
+  }
+</style>
+</head>
+<body>
+
+  <section id="hero" aria-labelledby="hero-title">
+    <div class="grid">
+      <h1 id="hero-title">Procedural layout that respects your content, your type and your contrast budget.</h1>
+      <p class="lede">A constrained solver picks the arrangement, checks every foreground and background pair, and emits plain HTML plus utility classes, so no design token is ever typed by hand.</p>
+      <dl class="stats">
+        <div class="stat"><dt>Axes</dt><dd>12</dd></div>
+        <div class="stat"><dt>Sections</dt><dd>3</dd></div>
+        <div class="stat"><dt>APCA</dt><dd>90</dd></div>
+        <div class="stat"><dt>Solver</dt><dd>64</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="features" aria-labelledby="features-title">
+    <div class="grid">
+      <h2 id="features-title">Three guarantees the layout engine holds for every generated page.</h2>
+      <div class="card" id="card-solve">
+        <h3>Solved, not guessed</h3>
+        <p>Candidate split ratios are scored by visual mass and entropy damping before a single class name is emitted.</p>
+      </div>
+      <div class="card" id="card-type">
+        <h3>Type that scales</h3>
+        <p>Headlines use clamp so the same markup stays readable from a phone to an ultrawide display.</p>
+      </div>
+      <div class="card" id="card-contrast">
+        <h3>Contrast that is proven</h3>
+        <p>Every palette pair is checked against a contrast target instead of being assumed from the source tokens.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="cta" aria-labelledby="cta-title">
+    <div class="grid">
+      <div class="inner">
+        <h2 id="cta-title">Generate a page and measure what the browser really did.</h2>
+        <button class="btn" type="button">Run the solver</button>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

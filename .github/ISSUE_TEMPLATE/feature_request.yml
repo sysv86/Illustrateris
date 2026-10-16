@@ -1,0 +1,75 @@
+name: Feature request
+description: Propose a new engine capability, role, backend or skill change.
+title: "feat: "
+labels: ["enhancement", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        `ple-engine` is deliberately small: it derives geometry, colour and typography from
+        constraints instead of shipping templates. A proposal is much easier to accept if it
+        names the constraint it should satisfy and the invariant it must not break.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What can a user (or an agent) not do today? Describe the situation, not the code.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: What should the engine do instead? Sketch the input fields and the expected output if you can.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      multiple: true
+      options:
+        - Context JSON schema / validation
+        - Semantic profiler / physics
+        - Colour (OKLCH + APCA)
+        - Tokens (scale, spacing, leading, tracking)
+        - Layout (BSP grammar, solver, candidate search)
+        - IR / codegen (HTML, Tailwind, CSS, eject)
+        - CLI / library API
+        - Agent Skills
+        - Documentation / examples
+    validations:
+      required: true
+
+  - type: textarea
+    id: invariants
+    attributes:
+      label: Invariants
+      description: |
+        The engine's tests check: determinism (no timestamps, byte-identical repeat runs),
+        contrast safety (APCA targets), grid safety (integer 12-column placement, no overlaps),
+        content awareness (real text extents) and escaping (one function, closed tag enums).
+        Note any of these your change touches, and how it keeps them true.
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Including "do nothing" and any workaround you are already using.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: This adds a runtime dependency (the crate currently has none by design).
+        - label: This changes the public CLI or JSON output contract.
+        - label: This needs a new example under `examples/`.
+        - label: I am willing to open a pull request for this.

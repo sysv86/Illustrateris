@@ -1,0 +1,38 @@
+{
+  "intent": {
+    "domain": "kids_education_app",
+    "tone": "playful_friendly",
+    "density": 0.4,
+    "asymmetry": 0.7,
+    "chromatic_energy": 0.8,
+    "seed": 2026
+  },
+  "content_tree": [
+    {
+      "role": "hero",
+      "primary_claim": "Learn by doing, laugh by default",
+      "supporting_text": "Ten-minute lessons that feel like games and add up to real skills.",
+      "action_type": "primary_button",
+      "action_label": "Try a free lesson",
+      "action_href": "#start",
+      "visual_anchor": "monumental_type"
+    },
+    {
+      "role": "feature_list",
+      "primary_claim": "Why families stay",
+      "items": [
+        { "title": "Tiny sessions", "body": "Ten minutes fits between breakfast and the school run." },
+        { "title": "Gentle progress", "body": "Streaks celebrate showing up, never punish a missed day." },
+        { "title": "Grown-up friendly", "body": "A weekly summary tells you what clicked and what needs a nudge." },
+        { "title": "Works offline", "body": "Download a week of lessons before the road trip." }
+      ]
+    },
+    {
+      "role": "cta",
+      "primary_claim": "Your first lesson is on us",
+      "action_type": "transactional_input",
+      "action_label": "Send me a link",
+      "action_placeholder": "Parent email"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "intent": {
+    "domain": "independent_media",
+    "tone": "editorial_elegant",
+    "density": 0.3,
+    "asymmetry": 0.5,
+    "chromatic_energy": 0.45,
+    "theme": "light",
+    "lang": "en"
+  },
+  "content_tree": [
+    {
+      "role": "hero",
+      "primary_claim": "Long reads for slow afternoons",
+      "supporting_text": "One carefully edited essay every Sunday, written by people who have time to think.",
+      "action_type": "transactional_input",
+      "action_label": "Subscribe",
+      "action_placeholder": "Your email address",
+      "visual_anchor": "monumental_type"
+    },
+    {
+      "role": "narrative",
+      "primary_claim": "No feed. No ads. No hurry.",
+      "supporting_text": "We pay writers properly, edit hard, and publish rarely. Subscribers fund everything, which is why nothing here is optimized for clicks."
+    },
+    {
+      "role": "proof_matrix",
+      "primary_claim": "By the numbers",
+      "items": [
+        { "metric": "312", "label": "Essays published" },
+        { "metric": "41k", "label": "Readers" },
+        { "metric": "0", "label": "Trackers" }
+      ]
+    }
+  ]
+}

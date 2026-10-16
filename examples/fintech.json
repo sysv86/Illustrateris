@@ -1,0 +1,45 @@
+{
+  "intent": {
+    "domain": "fintech_infrastructure",
+    "tone": "high_assurance_technical",
+    "density": 0.75,
+    "asymmetry": 0.60,
+    "chromatic_energy": 0.20
+  },
+  "content_tree": [
+    {
+      "role": "hero",
+      "primary_claim": "Sub-millisecond Settlement Layer",
+      "supporting_text": "Zero-knowledge cryptographic verification for institutional throughput.",
+      "action_type": "transactional_input",
+      "action_label": "Request access",
+      "action_placeholder": "Work email",
+      "visual_anchor": "monumental_metric"
+    },
+    {
+      "role": "proof_matrix",
+      "items": [
+        { "metric": "0.12ms", "label": "Finality" },
+        { "metric": "99.999%", "label": "Uptime" },
+        { "metric": "$4.2B", "label": "Daily Flow" }
+      ]
+    },
+    {
+      "role": "feature_list",
+      "primary_claim": "Built for regulated flow",
+      "items": [
+        { "title": "Deterministic finality", "body": "Every transfer settles in a single round with a verifiable proof attached to the receipt." },
+        { "title": "Audit by construction", "body": "Ledger state is reproducible from signed inputs, so compliance replays are a query, not a project." },
+        { "title": "Institutional limits", "body": "Per-counterparty exposure caps are enforced inside the proof, not in a sidecar service." }
+      ]
+    },
+    {
+      "role": "cta",
+      "primary_claim": "Talk to the settlement team",
+      "supporting_text": "We onboard a limited number of institutions each quarter.",
+      "action_type": "primary_button",
+      "action_label": "Book a session",
+      "action_href": "#contact"
+    }
+  ]
+}

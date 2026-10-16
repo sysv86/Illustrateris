@@ -1,0 +1,81 @@
+{
+  "intent": {
+    "domain": "realtime_graphics",
+    "tone": "cinematic_technical",
+    "density": 0.55,
+    "asymmetry": 0.62,
+    "chromatic_energy": 0.55
+  },
+  "content_tree": [
+    {
+      "role": "nav",
+      "primary_claim": "Lumen",
+      "items": [
+        { "title": "Renderer", "href": "#renderer" },
+        { "title": "Benchmarks", "href": "#benchmarks" },
+        { "title": "Docs", "href": "/docs" },
+        { "title": "Changelog", "href": "https://example.com/changelog" }
+      ],
+      "action_type": "secondary_link",
+      "action_label": "Open the demo",
+      "action_href": "#demo"
+    },
+    {
+      "role": "hero",
+      "primary_claim": "Real-time light fields, computed on the GPU",
+      "supporting_text": "A single WebGPU device drives signed-distance fields, volumetric scattering and physically-based tone mapping without a frame of pre-baked geometry.",
+      "visual_anchor": "webgpu_canvas",
+      "shader": "sdf_raymarch",
+      "aspect_ratio": 1.6,
+      "action_type": "primary_button",
+      "action_label": "Launch the surface",
+      "action_href": "#demo"
+    },
+    {
+      "role": "proof_matrix",
+      "items": [
+        { "metric": "1.4ms", "label": "Frame budget" },
+        { "metric": "4.2M", "label": "Rays per frame" },
+        { "metric": "120fps", "label": "Sustained" },
+        { "metric": "1", "label": "Device" }
+      ]
+    },
+    {
+      "role": "feature_list",
+      "primary_claim": "One device, no render thread gymnastics",
+      "items": [
+        { "title": "Compute-first geometry", "body": "Signed-distance fields are evaluated in a compute pass, so the raster stage only shades what the rays actually hit." },
+        { "title": "Frame-rate independent motion", "body": "Spring choreography integrates delta time, so camera easing is identical at 60Hz and 144Hz." },
+        { "title": "DPR clamped surfaces", "body": "The device-pixel ratio is clamped and the render loop pauses off-screen, keeping the tab responsive on integrated GPUs." }
+      ]
+    },
+    {
+      "role": "media",
+      "primary_claim": "Live shader surfaces",
+      "supporting_text": "Every surface below is declared as a Context JSON block and compiled into a semantic figure with an accessible canvas.",
+      "items": [
+        { "title": "Volumetric scattering", "shader": "volumetric_raymarch", "aspect_ratio": 1.778 },
+        { "title": "Signed-distance field", "shader": "sdf_field", "aspect_ratio": 1.0 }
+      ]
+    },
+    {
+      "role": "cta",
+      "primary_claim": "Point one device at it",
+      "supporting_text": "The demo is a single HTML file with no build step and no framework.",
+      "action_type": "primary_button",
+      "action_label": "Run the shader",
+      "action_href": "#demo"
+    },
+    {
+      "role": "footer",
+      "primary_claim": "Lumen",
+      "supporting_text": "© 2026 Lumen Graphics. Compiled with the Illustrateris Procedural Layout Engine.",
+      "items": [
+        { "title": "Status", "href": "https://example.com/status" },
+        { "title": "Security", "href": "/security" },
+        { "title": "Privacy", "href": "/privacy" },
+        { "title": "Terms", "href": "/terms" }
+      ]
+    }
+  ]
+}

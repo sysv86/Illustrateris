@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or usage help
+    url: https://github.com/sysv86/Illustrateris/discussions
+    about: Ask how to compile a Context JSON layout, use a skill, or read the report.
+  - name: Security issue
+    url: https://github.com/sysv86/Illustrateris/security/advisories/new
+    about: Please report vulnerabilities privately instead of opening a public issue.
