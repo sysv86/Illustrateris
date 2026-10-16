@@ -288,14 +288,19 @@ impl<'a> Builder<'a> {
     fn link(&self, label: &str, href: &str) -> PlanBlock {
         let t = self.typo(TextRole::Button, 1.0, ColorRole::TextSecondary);
         let (total, longest) = text_extent(label, &t, self.physics.personality);
-        let min = self.gm.cols_for(longest * 1.05).max(2.0);
+        // A link is exactly as wide as its label: the floor is the longest unbreakable word, the
+        // cap the whole label on one line. Rounding every link up to two columns (the previous
+        // floor) burned a column per short item, which is what made a five-link nav with a logo and
+        // an action unrealizable on a single twelve-column row.
+        let min = self.gm.cols_for(longest * 1.05);
+        let line = self.gm.cols_for(total * 1.08).max(min);
         let mass = self.text_mass(&t, label);
         PlanBlock {
             layout: Block {
                 min_cols: min,
-                pref_cols: min,
-                ideal_max_cols: (min + 1.0).min(12.0),
-                max_cols: self.gm.cols_for(total * 1.08).max(min).min(12.0),
+                pref_cols: line,
+                ideal_max_cols: line,
+                max_cols: line,
                 min_h: 0.5,
                 weight: 1.0,
             },

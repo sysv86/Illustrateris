@@ -173,6 +173,25 @@ fn role_specific_requirements_are_enforced() {
     assert!(e.contains("href"), "unexpected: {e}");
 }
 
+/// Sections are `overflow: hidden`, so an unbreakable token (a long identifier, path or URL) would
+/// be silently clipped instead of reported as page overflow. The document must carry the inherited
+/// break rule in both backends.
+#[test]
+fn long_tokens_can_break_instead_of_being_clipped() {
+    let src = r#"{"content_tree":[{"role":"faq","items":[{"title":"Where does the setting live?","body":"AVeryLongUnbrokenIdentifierName is resolved through /usr/lib/some/deep/absolute/path/to/a/library.so underneath the default install root."}]}]}"#;
+    let mut css = cfg();
+    css.backend = Backend::Css;
+    css.tailwind_cdn = false;
+    let mut tw = cfg();
+    tw.backend = Backend::Tailwind;
+    for out in [compile(src, &css).unwrap(), compile(src, &tw).unwrap()] {
+        assert!(
+            out.html.contains("overflow-wrap:break-word") && out.html.contains("overflow-wrap:anywhere"),
+            "document must let long tokens break instead of clipping them"
+        );
+    }
+}
+
 #[test]
 fn interactive_states_are_preserved_across_backends() {
     let src = example("product-platform");

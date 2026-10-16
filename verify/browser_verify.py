@@ -389,7 +389,11 @@ MEASURE_JS = r"""
     if (SKIP.has(t)) continue;
     const sw = el.scrollWidth;
     const cw = el.clientWidth;
-    if (cw > 0 && sw > cw + 1) {
+    const ch = el.clientHeight;
+    // A one-pixel stub is the canonical visually-hidden accessibility helper (`sr-only`). It is
+    // deliberately clipped: it never renders the text it carries, so it is not clipped content.
+    if (cw <= 1 || ch <= 1) continue;
+    if (sw > cw + 1) {
       overflowing.push({
         tag: t, scrollWidth: sw, clientWidth: cw,
         text: clip(el.textContent, 80),

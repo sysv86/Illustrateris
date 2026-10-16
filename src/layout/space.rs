@@ -171,6 +171,51 @@ pub fn stack_tree(n: usize) -> Bsp {
     go(0, n.max(1))
 }
 
+/// Ordered wrap: `rows` horizontal bands over *consecutive* blocks (row 1 = `0..k`, row 2 = the
+/// rest, ...), each band a chain of vertical splits. This is the topology a section falls back to
+/// when its preferred axis policy admits no feasible arrangement — a nav with more links than fit
+/// side by side, for instance — and unlike a free BSP it keeps DOM order, visual order and focus
+/// order identical.
+pub fn wrap_tree(n: usize, rows: usize) -> Bsp {
+    fn band(start: usize, len: usize) -> Bsp {
+        if len <= 1 {
+            Bsp::Leaf(start)
+        } else {
+            Bsp::Split {
+                axis: Axis::Vertical,
+                ratio: 1.0 / len as f64,
+                first: Box::new(Bsp::Leaf(start)),
+                second: Box::new(band(start + 1, len - 1)),
+            }
+        }
+    }
+    let rows = rows.clamp(1, n.max(1));
+    if rows <= 1 {
+        return band(0, n.max(1));
+    }
+    // Bands as equal in size as possible, the earlier rows taking the extra block: the visual
+    // centre of mass then sits slightly above the geometric middle, which the scorer prefers.
+    let base = n / rows;
+    let extra = n % rows;
+    let mut bounds: Vec<(usize, usize)> = Vec::with_capacity(rows);
+    let mut start = 0;
+    for r in 0..rows {
+        let len = base + usize::from(r < extra);
+        bounds.push((start, len));
+        start += len;
+    }
+    fn stack(bounds: &[(usize, usize)], idx: usize) -> Bsp {
+        let (start, len) = bounds[idx];
+        let first = Box::new(band(start, len));
+        if idx + 1 >= bounds.len() {
+            return *first;
+        }
+        let remaining = (bounds.len() - idx) as f64;
+        Bsp::Split { axis: Axis::Horizontal, ratio: 1.0 / remaining, first, second: Box::new(stack(bounds, idx + 1)) }
+    }
+    stack(&bounds, 0)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -208,5 +253,28 @@ mod tests {
     fn stack_tree_shape() {
         assert_eq!(stack_tree(1).leaf_count(), 1);
         assert_eq!(stack_tree(5).leaf_count(), 5);
+    }
+
+    #[test]
+    fn wrap_tree_keeps_reading_order_and_row_count() {
+        for n in 1..=8usize {
+            for rows in 1..=n {
+                let t = wrap_tree(n, rows);
+                assert_eq!(t.leaf_count(), n, "n={n} rows={rows}");
+                let mut order = Vec::new();
+                collect(&t, &mut order);
+                assert_eq!(order, (0..n).collect::<Vec<_>>(), "n={n} rows={rows}");
+                assert_eq!(row_count(&t), rows, "n={n} rows={rows}");
+            }
+        }
+    }
+
+    /// Number of horizontal bands (rows) in a wrap tree.
+    fn row_count(t: &Bsp) -> usize {
+        match t {
+            Bsp::Leaf(_) => 1,
+            Bsp::Split { axis: Axis::Horizontal, second, .. } => 1 + row_count(second),
+            Bsp::Split { axis: Axis::Vertical, .. } => 1,
+        }
     }
 }

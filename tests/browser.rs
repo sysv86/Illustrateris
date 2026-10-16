@@ -114,6 +114,13 @@ fn document_renders_and_matches_engine_estimates_in_a_browser() {
             assert_eq!(sec.get("contained").and_then(|v| v.as_bool()), Some(true),
                 "width {width}: section {:?} escapes by {:?}px", str_of(&sec, "id"), f64_of(&sec, "overflow_px"));
         }
+        // Sections are `overflow: hidden`, so a block that outgrows its own box is clipped instead of
+        // reported as page overflow. Unbreakable tokens (long identifiers, paths, URLs) used
+        // to be cut off this way at 320-375px; assert that nothing overflows its own box.
+        let overflowing = vp.get("overflowing_elements").and_then(|v| v.as_array()).cloned().unwrap_or_default();
+        assert!(overflowing.is_empty(),
+            "width {width}: {} element(s) overflow their own box (clipped content): {:?}",
+            overflowing.len(), overflowing.first());
 
         let measured = vp.get("texts").and_then(|v| v.as_array()).cloned().unwrap_or_default();
         for r in &texts {

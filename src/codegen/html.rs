@@ -372,7 +372,12 @@ pub fn render_document(doc: &Document, opts: &RenderOptions) -> String {
         w.line("<script src=\"https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4\"></script>");
     }
     let mut base_style = format!(
-        "html{{background:{};-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}}img,video{{display:block;max-width:100%;object-fit:cover}}",
+        // `overflow-wrap` is inherited, so setting it once covers every text node. Long unbreakable
+        // tokens (an identifier, an absolute path, a URL with a query) would otherwise run past their
+        // box and be silently clipped, because sections are `overflow: hidden`. `break-word` is the
+        // fallback for engines without `anywhere`; `anywhere` also shrinks min-content so a token
+        // cannot inflate a flex/grid item whose `min-width` is `auto`.
+        "html{{overflow-wrap:break-word;overflow-wrap:anywhere;background:{};-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}}img,video{{display:block;max-width:100%;object-fit:cover}}",
         doc.page_bg.css()
     );
     if doc.tokens.emit_grain {

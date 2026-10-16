@@ -3,7 +3,7 @@
 
 use super::arrange::{arrange, ArrangeError, Arrangement, Block, Placement};
 use super::rng::{derive_seed, Rng};
-use super::space::{generate, stack_tree, Bsp, GenParams, Grammar};
+use super::space::{generate, stack_tree, wrap_tree, Bsp, GenParams, Grammar};
 use super::visual_mass::{centroid_x, centroid_y, eccentricity, eccentricity_y, imbalance_factor, range_distance};
 
 pub struct SearchInput<'a> {
@@ -20,6 +20,9 @@ pub struct SearchInput<'a> {
     /// Allowed imbalance range from entropy damping.
     pub allowed: (f64, f64),
 }
+
+/// Rows tried when a section cannot be realized under its preferred axis policy.
+const MAX_WRAP_ROWS: usize = 4;
 
 #[derive(Debug, Clone)]
 pub struct Chosen {
@@ -77,8 +80,48 @@ fn manual_stack(blocks: &[Block], cols: u32, height: f64) -> Arrangement {
 }
 
 pub fn search(inp: &SearchInput) -> Chosen {
+    let chosen = search_grammar(inp, inp.grammar);
+    if !chosen.fallback {
+        return chosen;
+    }
+    // A restrictive axis policy can make a section unrealizable even though it wraps cleanly: a nav
+    // with more links than fit side by side on one 12-column row has no all-vertical solution, yet
+    // it is trivially solvable as two rows. Before degrading to the full-width stack (which is not a
+    // nav at all), try ordered wraps — row 1 = blocks 0..k, row 2 = the rest — so reading order and
+    // focus order are preserved.
+    let mut best = chosen;
+    for rows in 2..=inp.blocks.len().min(MAX_WRAP_ROWS) {
+        let tree = wrap_tree(inp.blocks.len(), rows);
+        let Ok(arr) = arrange(&tree, inp.blocks, inp.cols, inp.height) else { continue };
+        let (cx, _) = centroid_x(&arr, inp.masses);
+        let (cy, _) = centroid_y(&arr, inp.masses);
+        let ecc = eccentricity(cx);
+        let ecc_y = eccentricity_y(cy);
+        let factor = imbalance_factor(&arr.cuts, ecc);
+        let penalty = score(&arr, ecc, ecc_y, factor, inp);
+        if best.fallback || penalty < best.penalty - 1e-12 {
+            best = Chosen {
+                arrangement: arr,
+                tree,
+                candidate_index: 0,
+                tried: inp.candidates.max(1),
+                feasible: 1,
+                eccentricity: ecc,
+                centroid_y: cy,
+                eccentricity_y: ecc_y,
+                factor,
+                penalty,
+                fallback: false,
+                warnings: Vec::new(),
+            };
+        }
+    }
+    best
+}
+
+fn search_grammar(inp: &SearchInput, grammar: Grammar) -> Chosen {
     let weights: Vec<f64> = inp.blocks.iter().map(|b| b.weight).collect();
-    let params = GenParams { asymmetry: inp.asymmetry, grammar: inp.grammar, width: inp.cols as f64, height: inp.height };
+    let params = GenParams { asymmetry: inp.asymmetry, grammar, width: inp.cols as f64, height: inp.height };
     let tried = inp.candidates.max(1);
     let mut feasible = 0usize;
     let mut best: Option<Chosen> = None;
@@ -201,7 +244,9 @@ mod tests {
 
     #[test]
     fn falls_back_when_nothing_fits() {
-        let blocks = vec![blk(8.0, 8.0, 12.0, 12.0, 1.0), blk(8.0, 8.0, 12.0, 12.0, 1.0)];
+        // A block wider than the grid cannot be realized by any topology, so the manual stack (which
+        // ignores widths) is the last resort.
+        let blocks = vec![blk(13.0, 13.0, 12.0, 12.0, 1.0), blk(13.0, 13.0, 12.0, 12.0, 1.0)];
         let masses = vec![1.0, 1.0];
         let inp = SearchInput {
             blocks: &blocks,
@@ -218,5 +263,45 @@ mod tests {
         let c = search(&inp);
         assert!(c.fallback);
         assert_eq!(c.arrangement.placements.len(), 2);
+    }
+
+    #[test]
+    fn wraps_instead_of_stacking_when_one_row_cannot_fit() {
+        // Three five-column blocks cannot sit side by side on a twelve-column row (15 > 12), but they
+        // wrap cleanly into two rows. The old behaviour silently emitted a full-width stack, which is
+        // not a nav at all; the wrap must win.
+        let blocks = vec![
+            blk(5.0, 5.0, 6.0, 6.0, 1.0),
+            blk(5.0, 5.0, 6.0, 6.0, 1.0),
+            blk(5.0, 5.0, 6.0, 6.0, 1.0),
+        ];
+        let masses = vec![1.0, 1.0, 1.0];
+        let inp = SearchInput {
+            blocks: &blocks,
+            masses: &masses,
+            grammar: Grammar { policy: AxisPolicy::VerticalOnly, header_band: false, equalize: false },
+            cols: 12,
+            height: 4.0,
+            asymmetry: 0.3,
+            candidates: 16,
+            seed: 7,
+            max_ecc: 0.15,
+            allowed: (0.2, 0.6),
+        };
+        let c = search(&inp);
+        assert!(!c.fallback, "a wrap must be preferred over the full-width stack");
+        let places = &c.arrangement.placements;
+        assert!(places.len() == 3);
+        let rows: std::collections::BTreeSet<u32> = places.iter().map(|p| p.row_start).collect();
+        assert_eq!(rows.len(), 2, "expected exactly two wrapped rows");
+        // Reading order (block index) must match visual order (row, then column).
+        for w in places.windows(2) {
+            let ordered = w[1].row_start > w[0].row_start
+                || (w[1].row_start == w[0].row_start && w[1].col_start >= w[0].col_start);
+            assert!(ordered, "reading order broken: {:?} then {:?}", w[0], w[1]);
+        }
+        for p in places {
+            assert!(p.col_start >= 1 && p.col_start + p.col_span <= 13);
+        }
     }
 }

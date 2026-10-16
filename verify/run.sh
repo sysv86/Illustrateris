@@ -106,6 +106,14 @@ def main(argv=None):
                         "width %s: section #%s not contained (child escapes by %spx)"
                         % (vp.get("width"), sec.get("id"), sec.get("overflow_px"))
                     )
+            for el in vp.get("overflowing_elements") or []:
+                # Sections are `overflow: hidden`, so content that outgrows its own box is clipped
+                # rather than reported as page overflow. Catch it here.
+                problems.append(
+                    "width %s: <%s> overflows its own box (%s > %s) around %r"
+                    % (vp.get("width"), el.get("tag"), el.get("scrollWidth"), el.get("clientWidth"),
+                       (el.get("text") or "")[:60])
+                )
         if problems:
             for p in problems:
                 sys.stderr.write("verify: FAIL: %s\n" % p)
